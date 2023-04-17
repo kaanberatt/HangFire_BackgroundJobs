@@ -1,6 +1,8 @@
 ﻿using FireApp.API.Dto;
+using FireApp.BackgroundJobs.Helper;
 using FireApp.DataAccess.Abstract;
 using FireApp.Entities.Concrete;
+using FireApp.Service.Jobs.Interfaces;
 using FireApp.Service.Services.Abstract;
 using Hangfire;
 using Hangfire.Storage;
@@ -12,15 +14,17 @@ namespace FireApp.API.Controllers
     [ApiController]
     public class HangfireController : ControllerBase
     {
+        private readonly ISuruHareketleriJob _suruHareketleriJob;
         private readonly IIntergrationLogDal _intergrationLogDal;
         private readonly ICronJobStarter _cronJobStarter;
         private readonly IStorageConnection _connection;
 
-        public HangfireController(ICronJobStarter cronJobStarter, IIntergrationLogDal ıntergrationLogDal)
+        public HangfireController(ICronJobStarter cronJobStarter, IIntergrationLogDal ıntergrationLogDal, ISuruHareketleriJob suruHareketleriJob)
         {
             _connection = JobStorage.Current.GetConnection();
             _cronJobStarter = cronJobStarter;
             _intergrationLogDal = ıntergrationLogDal;
+            _suruHareketleriJob = suruHareketleriJob;
         }
         [HttpGet("RunIntegration")]
         public IActionResult RunIntegration(bool isActive)
@@ -28,7 +32,7 @@ namespace FireApp.API.Controllers
             try
             {
                 // Veritabanından son yapılmış entegrasyon durumunu gösteren değeri verir
-                var integrationStatus = _intergrationLogDal.GetListAll(null,x => x.OrderBy(x => x.Id))?.Result?.LastOrDefault()?.isActive;
+                var integrationStatus = _intergrationLogDal.GetListAll(null, x => x.OrderBy(x => x.Id))?.Result?.LastOrDefault()?.isActive;
                 if (integrationStatus == null)
                 {
                     integrationStatus = false;
@@ -50,7 +54,7 @@ namespace FireApp.API.Controllers
                 {
                     return Ok("Entegrasyon zaten açık");
                 }
-                else if(integrationStatus == true && isActive == false) // entegrasyon durumu açık kapatmak isteniyor , entegrasyonu kapat 
+                else if (integrationStatus == true && isActive == false) // entegrasyon durumu açık kapatmak isteniyor , entegrasyonu kapat 
                 {
                     _cronJobStarter.FinishJobs();
                     var log = new IntegrationLog
@@ -108,6 +112,13 @@ namespace FireApp.API.Controllers
                 }
             }
             return NotFound("Job Bulunamadı");
+        }
+
+        [HttpGet("WaitingFilesForSuruHareketleri")]
+        public IActionResult GetWaitingFilesForSuruHareketleri()
+        {
+            var result = _suruHareketleriJob.GetWaitingFiles();
+            return Ok(result);
         }
     }
 }

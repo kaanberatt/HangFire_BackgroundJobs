@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using FireApp.BackgroundJobs.Models;
+using Hangfire;
 
 namespace FireApp.Service.Jobs.Interfaces
 {
@@ -8,6 +9,8 @@ namespace FireApp.Service.Jobs.Interfaces
         [JobDisplayName("Suru Hareketleri Job")]
         [Queue("default")]
         void Run();
+
+        List<List<WaitingFilesModel>> GetWaitingFiles();
 
     }
 }

@@ -13,7 +13,7 @@ using Hangfire;
 using HangfireBasicAuthenticationFilter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
+using FireApp.BackgroundJobs.Helper;
 
 IConfiguration _configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
@@ -44,6 +44,7 @@ builder.Services.AddScoped<ISuruHareketleriJob, SuruHareketleriJob>();
 builder.Services.AddScoped<IDeleteExcelFilesJob, DeleteExcelFilesJob>();
 builder.Services.AddScoped<IHayvanHareketleriJob, HayvanHareketleriJob>();
 builder.Services.AddScoped<IReader, Reader>();
+builder.Services.AddScoped<IPendingFilesHelper, PendingFilesHelper>();
 builder.Services.AddScoped<ISuruDal, EfSuruDal>();
 builder.Services.AddScoped<IIntergrationLogDal, EfIntegrationLogDal>();
 

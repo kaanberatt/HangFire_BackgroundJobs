@@ -75,7 +75,7 @@ namespace FireApp.BackgroundJobs.Concrete
                             }
                         }
 
-                        string newFileName = fileName.Replace("YemMerkeziListe ", "Islendi_").Replace(" ", "_"); // Dosya işlendikten sonra adını değiştiriyoruz. bir daha işlememek için
+                        string newFileName = fileName.Replace("YemMerkeziListe ", "X"); // Dosya işlendikten sonra adını değiştiriyoruz. bir daha işlememek için
                         string newFilePath = Path.Combine(Path.GetDirectoryName(filePath), newFileName);
                         File.Copy(filePath, newFilePath);
                         File.Delete(filePath); // Eski dosya siliniyor
@@ -93,11 +93,11 @@ namespace FireApp.BackgroundJobs.Concrete
             string etapKlasoruYolu = Path.Combine(_configuration.GetSection("Path:FolderPath").Value, etapNo, altKlasor);
             if (Directory.Exists(etapKlasoruYolu))
             {
-                List<string> excelFiles = Directory.GetFiles(etapKlasoruYolu).Where(x => new FileInfo(x).CreationTime < DateTime.Now.AddDays(-1)).ToList();
+                List<string> excelFiles = Directory.GetFiles(etapKlasoruYolu).Where(x => new FileInfo(x).CreationTime < DateTime.Now.AddDays(-5)).ToList();
                 foreach (var filePath in excelFiles)
                 {
                     // Dosyanın oluşturulma tarihini kontrol eder
-                    // Dosya oluşturulma tarihi 24 saatten önce ise dosyayı silecek
+                    // Dosya oluşturulma tarihi 5 günden önce ise dosyayı silecek
                     // Dosyayı silin
                     File.Delete(filePath);
                 }
@@ -165,7 +165,7 @@ namespace FireApp.BackgroundJobs.Concrete
                                     }
                                 }
                             }
-                            string newFileName = fileName.Replace("YemMerkeziListe ", "Islendi_").Replace(" ", "_"); // Dosya işlendikten sonra adını değiştiriyoruz. bir daha işlememek için
+                            string newFileName = fileName.Replace("YemMerkeziListe ", "X"); // Dosya işlendikten sonra adını değiştiriyoruz. bir daha işlememek için
                             string newFilePath = Path.Combine(Path.GetDirectoryName(filePath), newFileName);
                             File.Copy(filePath, newFilePath);
                             File.Delete(filePath); // Eski dosya siliniyor
